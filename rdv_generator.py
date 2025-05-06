@@ -10,6 +10,20 @@ from docx.oxml.ns import qn
 import os
 import unicodedata
 
+def convert_mois_to_int(val):
+    if pd.isnull(val):
+        return None
+    val = str(val).strip().lower()
+    mois_dict = {
+        'janvier': 1, 'février': 2, 'fevrier': 2, 'mars': 3, 'avril': 4,
+        'mai': 5, 'juin': 6, 'juillet': 7, 'août': 8, 'aout': 8,
+        'septembre': 9, 'octobre': 10, 'novembre': 11, 'décembre': 12, 'decembre': 12,
+        '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
+        '9': 9, '10': 10, '11': 11, '12': 12
+    }
+    return mois_dict.get(val, None)
+
+
 def sanitize_filename(name):
     return name.replace(" ", "_").replace("/", "-")
 

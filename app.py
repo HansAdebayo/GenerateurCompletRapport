@@ -13,7 +13,8 @@ COMMERCIAUX_CIBLES = ['Sandra', 'Ophélie', 'Arthur', 'Grégoire', 'Tania']
 st.set_page_config(page_title="📊 Rapports complets commerciaux", layout="centered")
 st.title("📊 Générateur de rapports commerciaux complets (avec RDV)")
 
-uploaded_file = st.file_uploader("📁 Importer le fichier Excel global (avec toutes les feuilles)", type=["xlsx"])
+uploaded_rapport = st.file_uploader("📁 Fichier Excel principal (rapports)", type=["xlsx"])
+uploaded_rdv = st.file_uploader("📁 Fichier Excel RDV", type=["xlsx"])
 uploaded_logo = st.file_uploader("🖼️ Logo (facultatif)", type=["png", "jpg", "jpeg"])
 
 selected_commerciaux = st.multiselect(
@@ -34,13 +35,17 @@ with col3:
 with col4:
     jour_fin = st.number_input("📍 Jour de fin", min_value=1, max_value=31, value=31)
 
-if uploaded_file and selected_commerciaux:
+if uploaded_rapport and uploaded_rdv and selected_commerciaux:
     if st.button("🚀 Générer les rapports fusionnés"):
         with st.spinner("📄 Génération des rapports en cours..."):
             with tempfile.TemporaryDirectory() as temp_dir:
-                xlsx_path = os.path.join(temp_dir, "data.xlsx")
-                with open(xlsx_path, "wb") as f:
-                    f.write(uploaded_file.read())
+                rapport_path = os.path.join(temp_dir, "rapport.xlsx")
+                rdv_path = os.path.join(temp_dir, "rdv.xlsx")
+
+                with open(rapport_path, "wb") as f:
+                    f.write(uploaded_rapport.read())
+                with open(rdv_path, "wb") as f:
+                    f.write(uploaded_rdv.read())
 
                 logo_path = None
                 if uploaded_logo:
@@ -51,8 +56,8 @@ if uploaded_file and selected_commerciaux:
                 output_dir = os.path.join(temp_dir, "rapports")
                 img_dir = os.path.join(temp_dir, "images")
 
-                data_by_part = charger_donnees(xlsx_path, mois, annee, jour_debut, jour_fin)
-                rdv_data = load_rdv_data(xlsx_path, jour_debut, jour_fin, mois, annee)
+                data_by_part = charger_donnees(rapport_path, mois, annee, jour_debut, jour_fin)
+                rdv_data = load_rdv_data(rdv_path, jour_debut, jour_fin, mois, annee)
 
                 for com in selected_commerciaux:
                     rdv_df = None
@@ -60,7 +65,7 @@ if uploaded_file and selected_commerciaux:
                         if nom.lower().startswith(com.lower()):
                             rdv_df = rdv_data[nom]
                             break
-                    creer_rapport(com, data_by_part, mois, annee, jour_debut, jour_fin, output_dir, xlsx_path, logo_path, img_dir, rdv_df)
+                    creer_rapport(com, data_by_part, mois, annee, jour_debut, jour_fin, output_dir, rapport_path, logo_path, img_dir, rdv_df)
 
                 zip_path = shutil.make_archive(os.path.join(temp_dir, "Rapports_Commerciaux_RDV"), 'zip', output_dir)
                 st.success("✅ Rapports générés avec succès.")
