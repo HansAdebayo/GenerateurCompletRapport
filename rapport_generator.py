@@ -267,12 +267,12 @@ def creer_rapport(commercial, data_by_part, mois, annee, jour_debut, jour_fin, o
     
     for titre, _, graphique in PARTIES:
         # Section RDV à la fin si dispo
-    if rdv_df is not None and not rdv_df.empty:
-        doc.add_page_break()
-        ajouter_rdv_section(doc, rdv_df, jour_debut, jour_fin, mois, annee)
+        if rdv_df is not None and not rdv_df.empty:
+            doc.add_page_break()
+            ajouter_rdv_section(doc, rdv_df, jour_debut, jour_fin, mois, annee)
 
-        df = data_by_part.get(titre, {}).get(commercial, pd.DataFrame())
-        ajouter_section(doc, excel_path, titre, df, graphique, commercial, mois, annee, jour_debut, jour_fin, img_dir)
+            df = data_by_part.get(titre, {}).get(commercial, pd.DataFrame())
+            ajouter_section(doc, excel_path, titre, df, graphique, commercial, mois, annee, jour_debut, jour_fin, img_dir)
     
     os.makedirs(output_dir, exist_ok=True)
     filename = f"{output_dir}/Rapport_Commercial_{sanitize_filename(commercial)}_{mois:02d}_{annee}.docx"
