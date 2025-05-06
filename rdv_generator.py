@@ -65,7 +65,8 @@ def load_rdv_data(path, jour_debut, jour_fin, mois, annee):
 
     return dict(tuple(df_filtre.groupby(col_com)))
 
-def creer_rapport_rdv(df, commercial, jour_debut, jour_fin, mois, annee, output_dir, logo_path=None):
+def creer_rapport(commercial, data_by_part, mois, annee, jour_debut, jour_fin, output_dir, excel_path, logo_path, img_dir, rdv_df=None):
+
     doc = Document()
 
     # Page de garde
